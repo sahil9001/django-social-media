@@ -1,0 +1,26 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    {% if user %}
+    <div class="media">
+        <form action="{% url 'send-friend-request' %}" method="POST">
+            <div class="media-body">
+                <h2 class="account-heading">{{ user.fullname }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+                <input type="hidden" name="user_id" value="{{ user.id }}"/>
+                {% if not is_friend %}
+                <button type="submit" class="btn btn-primary">
+                    Add Friend
+                </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <h2 class="account-heading">User not found</h2>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

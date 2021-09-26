@@ -1,0 +1,26 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    {% if friends %}
+    {% for friend in friends %}
+    <div class="media">
+        <div class="media-body">
+            <h2 class="account-heading">{{ friend.fullname }}</h2>
+            <p class="text-secondary">{{ friend.email }}</p>
+
+        </div>
+
+        <form action="{% url 'remove-friend' %}" method="POST">
+            <input type="hidden" name="friend_id" value="{{ friend.id }}" />
+            <button type="submit" class="btn btn-danger" data-toggle="modal">Decline</button>
+        </form>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-info">
+        <p>You have no friends, try sending friend requests to connect!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

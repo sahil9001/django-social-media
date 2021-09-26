@@ -1,0 +1,32 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    {% if friendrequests %}
+    {% for friendrequest in friendrequests %}
+    <div class="media">
+        <div class="media-body">
+            <h2 class="account-heading">{{ friendrequest.sender.fullname }}</h2>
+            <p class="text-secondary">{{ friendrequest.sender.email }}</p>
+
+        </div>
+        {% if friendrequest.is_active %}
+        <form action="{% url 'accept-friend-request' %}" method="POST">
+            <input type="hidden" name="friendrequest_id" value="{{ friendrequest.sender.id }}"/>
+
+            <button type="submit" class="btn btn-primary" data-toggle="modal">Accept</button>
+        </form>
+        <form action="{% url 'decline-friend-request' %}" method="POST">
+            <input type="hidden" name="friendrequest_id" value="{{ friendrequest.sender.id }}"/>
+            <button type="button" class="btn btn-danger" data-toggle="modal">Decline</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-info">
+        <p>You have no friend requests.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}
