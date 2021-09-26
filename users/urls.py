@@ -40,4 +40,5 @@ urlpatterns = [
     path('decline_request/', views.decline_friend_request, name='decline-friend-request'),
     path('friend_list/', views.friend_list, name='friend-list'),
     path('remove_friend/', views.remove_friend, name='remove-friend'),
+    path('remove_post/',views.remove_post,name="remove-post")
 ]
