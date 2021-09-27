@@ -1,12 +1,12 @@
 from posts.models import Posts
 from django.shortcuts import render
-from users.forms import SignInForm, SignUpForm
+from users.forms import NewPostForm, SignInForm, SignUpForm
 from django.shortcuts import render, redirect
 import requests
 from djangoproj import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .serializers import UserLoginSerializer, UserSerializer
+from .serializers import CreateFormSerializer, UserLoginSerializer, UserSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from .models import FriendList, FriendRequest, Users
 from rest_framework.response import Response
@@ -72,12 +72,18 @@ def register(request):
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
             phone = form.cleaned_data.get("phone")
+            address = form.cleaned_data.get("address")
+            occupation = form.cleaned_data.get("occupation")
+            dob = form.cleaned_data.get("dob")
             form_obj = {
                 "fullname": fullname,
                 "username": username,
                 "email": email,
                 "password": password,
                 "phone": phone,
+                "address" : address,
+                "occupation" : occupation,
+                "dob" : dob
             }
             response = register_user(request, data=form_obj)
             if response.status_code == 201:
@@ -133,8 +139,16 @@ def profile(request):
     if friendlist:
         for friend in friendlist.friends.all():
             friend_list.append(friend)
+    friend_request_list = []
+    try:
+        friendrequest = FriendRequest.objects.filter(receiver=request.user)
+    except FriendRequest.DoesNotExist:
+        friendrequest = None
+    if friendrequest:
+        for req in friendrequest:
+            friend_request_list.append(req)
     return render(
-        request, "users/profile.html", {"posts": post_list, "friends": friend_list}
+        request, "users/profile.html", {"friendrequest" : friend_request_list,"posts": post_list, "friends": friend_list}
     )
 
 
@@ -226,7 +240,6 @@ def accept_friend_request(request):
             user = Users.objects.get(pk=request.POST.get("friendrequest_id"))
         except Users.DoesNotExist:
             user = None
-        print(user.fullname)
         try:
             friendrequest = FriendRequest.objects.get(
                 sender=user, receiver=request.user
@@ -339,3 +352,39 @@ def remove_post(request):
             return redirect("profile")
     else:
         return redirect("profile")
+
+def create_post(request,data):
+    serializer = CreateFormSerializer(data=data)
+    if serializer.is_valid():
+        post = serializer.save(user=request.user)
+        return Response({}, status.HTTP_201_CREATED)
+    else:
+        data = serializer.errors
+        print(data)
+        return Response(data, status.HTTP_400_BAD_REQUEST)
+
+@login_required
+def new_post(request):
+    if request.method == "POST":
+        form = NewPostForm(request.POST,request.FILES)
+        print(form.errors)
+        if form.is_valid():
+            title = form.cleaned_data.get("title")
+            body = form.cleaned_data.get("body")
+            image = form.cleaned_data.get("image")
+            form_obj = {
+                "title" : title,
+                "body" : body,
+                "image" : image,
+            }
+            response = create_post(request, data=form_obj)
+            print(response.status_code)
+            if response.status_code == 201:
+                messages.success(request,"Posted successfully!")
+
+                return redirect("new-post")
+            else:
+                messages.warning(request, "Credentials don't match")
+    else:
+        form = NewPostForm()
+    return render(request, "users/new_post.html", {"form": form})

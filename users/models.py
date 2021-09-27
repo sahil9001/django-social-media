@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from datetime import date
 # Create your models here.
 class Users(AbstractUser):
     USERNAME_FIELD = 'phone'
@@ -8,7 +8,10 @@ class Users(AbstractUser):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=50, unique=True)
     phone = models.CharField(max_length=50,unique=True,blank=False)
-    password = models.CharField(max_length=50)
+    occupation = models.CharField(max_length=50,null=True)
+    address = models.CharField(max_length=255,null=True)
+    dob = models.DateField(default = date.today)
+    password = models.CharField(max_length=255)
     REQUIRED_FIELDS = [ 'username']
 
     def __str__(self):

@@ -41,6 +41,8 @@
                         aria-selected="true">FRIENDS</a></li>
                 <li class="nav-item"><a href="#profile-post" class="nav-link" data-toggle="tab"
                         aria-selected="false">POSTS</a></li>
+                <li class="nav-item"><a href="#profile-requests" class="nav-link" data-toggle="tab"
+                        aria-selected="false">FRIEND REQUESTS</a></li>
             </ul>
         </div>
 
@@ -59,9 +61,24 @@
                                         <div class="friend-img"><img
                                                 src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" /></div>
                                         <div class="friend-info">
-                                            <h4>{{ friend.fullname }}</h4>
-                                            <p>{{ friend.email }} </p>
+                                            <div class="row">
+                                                <div class="col-sm">
+                                                    <h4>{{ friend.fullname }}</h4>
+                                                </div>
+                                                <div class="col-sm ">
+                                                    <div class="float-sm-right">
+                                                        <form action="{% url 'remove-friend' %}" method="POST">
+                                                            <input type="hidden" name="friend_id"
+                                                                value="{{ friend.id }}" />
+                                                            <button type="submit" class="btn btn-danger"
+                                                                data-toggle="modal">Remove</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
+
                                     </a>
                                 </li>
                                 {% endfor %}
@@ -85,8 +102,8 @@
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <form action="{% url 'remove-post' %}" method="POST">
-                                                            <input type="hidden" name="post_id" value="{{ post.id }}"/>
-                                                            <button type="submit" class="dropdown-item" >Delete Post</a>
+                                                            <input type="hidden" name="post_id" value="{{ post.id }}" />
+                                                            <button type="submit" class="dropdown-item">Delete Post</a>
 
                                                         </form>
                                                     </div>
@@ -101,6 +118,47 @@
                                 {% endfor %}
                             </ul>
                         </div>
+                        <div class="tab-pane fade active" id="profile-requests">
+                            <div class="m-b-10"><b>Friend Request List ({{ friendrequest|length }})</b></div>
+
+                            <ul class="friend-list clearfix">
+                                {% for friend in friendrequest %}
+                                <li>
+                                    <a href="#">
+                                        <div class="friend-img"><img
+                                                src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" /></div>
+                                        <div class="friend-info">
+                                            <div class="row">
+                                                <div class="col-sm">
+                                                    <h4>{{ friend.sender.fullname }}</h4>
+                                                </div>
+                                                <div class="col-sm ">
+                                                    <small>
+                                                        <form action="{% url 'accept-friend-request' %}" method="POST">
+                                                            <input type="hidden" name="friendrequest_id"
+                                                                value="{{ friend.sender.id }}" />
+                                                            <button type="submit" class="btn btn-success"
+                                                                data-toggle="modal">Accept</button>
+                                                        </form>
+                                                    </small>
+                                                    <div class="float-sm-right">
+                                                        <form action="{% url 'decline-friend-request' %}" method="POST">
+                                                            <input type="hidden" name="friendrequest_id"
+                                                                value="{{ friend.sender.id }}" />
+                                                            <button type="submit" class="btn btn-danger"
+                                                                data-toggle="modal">Decline</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -109,19 +167,17 @@
                         <li class="title">PERSONAL INFORMATION</li>
                         <li>
                             <div class="field">Occupation:</div>
-                            <div class="value">UXUI / Frontend Developer</div>
+                            <div class="value">{{ user.occupation }}</div>
                         </li>
                         <li>
                             <div class="field">Date of Birth:</div>
-                            <div class="value">1989/11/04</div>
+                            <div class="value">{{ user.dob }}</div>
                         </li>
                         <li>
                             <div class="field">Address:</div>
                             <div class="value">
                                 <address class="m-b-0">
-                                    Twitter, Inc.<br />
-                                    1355 Market Street, Suite 900<br />
-                                    San Francisco, CA 94103
+                                    {{ user.address }}
                                 </address>
                             </div>
                         </li>

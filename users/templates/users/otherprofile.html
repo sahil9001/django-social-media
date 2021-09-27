@@ -33,14 +33,21 @@
                 <div class="profile-header-info">
                     <h4 class="m-t-sm" style="color: aliceblue;">{{ user.fullname }}</h4>
                     <p class="m-b-sm">{{ user.email }}</p>
+                    {% if user is not friend %}
+                        <form action="{% url 'send-friend-request' %}" method="POST">
+                            <input type="hidden" name="user_id" value="{{ user.id }}"/>
+                            <button type="submit" class="btn btn-primary">Send Friend Request</button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
 
             <ul class="profile-header-tab nav nav-tabs">
                 <li class="nav-item"><a href="#profile-friends" class="nav-link active show" data-toggle="tab"
                         aria-selected="true">FRIENDS</a></li>
-                <li class="nav-item"><a href="#profile-post" class="nav-link" data-toggle="tab"
-                        aria-selected="false">POSTS</a></li>
+                        <li class="nav-item"><a href="#profile-post" class="nav-link" data-toggle="tab"
+                            aria-selected="false">POSTS</a></li>
+                    
             </ul>
         </div>
 
@@ -54,6 +61,21 @@
 
                             <ul class="friend-list clearfix">
                                 {% for friend in friends %}
+                                <li>
+                                        <div class="friend-img"><img
+                                                src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" /></div>
+                                        <div class="friend-info">
+                                            <h4>{{ friend.fullname }}</h4>
+                                            <p>{{ friend.email }} </p>
+                                        </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <br/>
+                            <div class="m-b-10"><b>Mutual Friend List ({{ mutual_friends|length }})</b></div>
+
+                            <ul class="friend-list clearfix">
+                                {% for friend in mutual_friends %}
                                 <li>
                                     <a href="#">
                                         <div class="friend-img"><img
