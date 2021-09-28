@@ -41,5 +41,7 @@ urlpatterns = [
     path('friend_list/', views.friend_list, name='friend-list'),
     path('remove_friend/', views.remove_friend, name='remove-friend'),
     path('remove_post/',views.remove_post,name="remove-post"),
-    path('new_post/',views.new_post,name="new-post")
+    path('new_post/',views.new_post,name="new-post"),
+    path('searchpage/',views.search_page,name="search-page"),
+    path('search/',views.search,name="search"),
 ]

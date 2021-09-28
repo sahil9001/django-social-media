@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views
+from . import views as post_views
 urlpatterns = [
-
+    path('',post_views.basepage,name='basepage'),
 ]

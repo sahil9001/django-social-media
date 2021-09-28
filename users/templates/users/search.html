@@ -1,0 +1,42 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    {% if results %}
+        <h2>Search Results</h2>
+        {% for result in results %}
+            <div class="search-result">
+                <div class="list-group">
+                    <a href="{% url 'other-profile' result.id %}" class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        {% if result.is_friend %}
+                        <h5 class="mb-1">{{ result.fullname }} <small>Connected</small></h5>
+                        {% else %}
+                        <h5 class="mb-1">{{ result.fullname }}</h5>
+                        {% endif %}
+                        {% if result.is_itself %}
+                        {% elif result.is_friend %}
+                        <form action="{% url 'remove-friend' %}" method="POST">
+                            <input type="hidden" name="friend_id" value="{{ result.id }}">
+                            <button type="submit" class="btn btn-danger" >
+                                Remove Friend
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'send-friend-request' %}" method="POST">
+                            <input type="hidden" name="user_id" value="{{ result.id }}">
+                            <button type="submit" class="btn btn-primary" >
+                                Add Friend
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                      <p class="mb-1">{{ result.address }}</p>
+                      <small>{{ result.email }}</small>
+                    </a>
+                  </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock content %}

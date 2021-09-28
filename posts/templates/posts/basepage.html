@@ -1,0 +1,51 @@
+{% extends "users/base.html" %}
+{% load static %}
+{% block content %}
+<main role="main">
+
+    <section class="jumbotron text-center">
+      <div class="container">
+        <h1 class="jumbotron-heading">Django Social Media</h1>
+        <p class="lead text-muted">Connect with friends, family and everyone around the world.<p>
+          <a href="{% url 'login' %}" class="btn btn-primary my-2">Login</a>
+          <a href="{% url 'register' %}" class="btn btn-secondary my-2">Register</a>
+        </p>
+      </div>
+    </section>
+
+    <div class="album py-5 bg-light">
+      <div class="container">
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card mb-4 box-shadow">
+              <img class="card-img-top" src="{% static 'users/1.png' %}" alt="Card image cap">
+              <div class="card-body">
+                <p class="card-text">Tell everyone about your world! Upload a post to share it with friends and family!</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 box-shadow">
+              <img class="card-img-top" src="{% static 'users/2.png' %}" alt="Card image cap">
+              <div class="card-body">
+                <p class="card-text">Make friends and connect anyone you know through your friend. Mutual friends are just a click away from you.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 box-shadow">
+              <img class="card-img-top" src="{% static 'users/3.png' %}" alt="Card image cap">
+              <div class="card-body">
+                <p class="card-text">Search among the list of users all over the world! From posts to users, everything covered!</p>
+              </div>
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+
+  </main>
+{% endblock %}

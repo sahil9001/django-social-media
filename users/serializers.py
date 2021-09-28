@@ -36,7 +36,7 @@ class CreateFormSerializer(ModelSerializer):
     def save(self,user,**kwargs):
         post = Posts.objects.create(
             title = self.validated_data["title"],
-            image = self.validated_data["image"],
+            image = self.validated_data.get("image"),
             body = self.validated_data["body"],
             user = user,
         )

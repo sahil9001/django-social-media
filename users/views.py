@@ -1,3 +1,6 @@
+import json
+from django.db import reset_queries
+from django.http.response import JsonResponse
 from posts.models import Posts
 from django.shortcuts import render
 from users.forms import NewPostForm, SignInForm, SignUpForm
@@ -14,6 +17,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q 
+from rest_framework.decorators import api_view
 
 # Create your views here.
 # def authenticate(request):
@@ -177,17 +182,18 @@ def otherprofile(request, id):
         friendlist = None
     is_friend = False
     if friendlist and user:
-        if user in friendlist.friends.all():
+        if request.user in friendlist.friends.all():
             is_friend = True
     mutual_friends = []
     all_friends = []
+    is_itself = False
     if friendlist and user:
         for friend in friendlist.friends.all():
             if friendlist.is_mutual_friend(user):
                 mutual_friends.append(friend)
             all_friends.append(friend)
     if user == request.user:
-        is_friend = True
+        is_itself = True
     try:
         posts = Posts.objects.filter(user=user)
     except Posts.DoesNotExist:
@@ -202,6 +208,7 @@ def otherprofile(request, id):
         {
             "user": user,
             "is_friend": is_friend,
+            "is_itself" : is_itself,
             "mutual_friends": mutual_friends,
             "friends": all_friends,
             "posts" : post_list
@@ -222,14 +229,15 @@ def send_friend_request(request):
             friendrequest, flag = FriendRequest.objects.get_or_create(
                 sender=request.user, receiver=receiver
             )
+            friendrequest.is_active = True
             friendrequest.save()
             messages.success(request, "Friend request sent")
-            return redirect("friend-requests")
+            return redirect("profile")
         else:
             messages.warning(request, "User not found")
-            return redirect("friend-requests")
+            return redirect("profile")
     else:
-        return redirect("friend-requests")
+        return redirect("profile")
 
 
 @login_required
@@ -250,13 +258,13 @@ def accept_friend_request(request):
             friendrequest.accept()
             friendrequest.save()
             messages.success(request, "Friend request accepted")
-            return redirect("friend-requests")
+            return redirect("profile")
         else:
             messages.warning(request, "Friend request not found")
-            return redirect("friend-requests")
+            return redirect("profile")
 
     else:
-        return redirect("friend-requests")
+        return redirect("profile")
 
 
 @login_required
@@ -277,13 +285,13 @@ def decline_friend_request(request):
             friendrequest.decline()
             friendrequest.save()
             messages.success(request, "Friend request accepted")
-            return redirect("friend-requests")
+            return redirect("profile")
         else:
             messages.warning(request, "Friend request not found")
-            return redirect("friend-requests")
+            return redirect("profile")
 
     else:
-        return redirect("friend-requests")
+        return redirect("profile")
 
 
 @login_required
@@ -327,12 +335,12 @@ def remove_friend(request):
             friendlist.unfriend(user)
             friendlist.save()
             messages.success(request, "Friend removed")
-            return redirect("friend-list")
+            return redirect("profile")
         else:
             messages.warning(request, "Friend not found")
-            return redirect("friend-list")
+            return redirect("profile")
     else:
-        return redirect("friend-list")
+        return redirect("profile")
 
 @login_required
 @csrf_exempt
@@ -388,3 +396,58 @@ def new_post(request):
     else:
         form = NewPostForm()
     return render(request, "users/new_post.html", {"form": form})
+
+@login_required
+def search(request):
+    query = request.GET.get("search")
+    try:
+        results = Users.objects.filter(Q(username__icontains=query) | Q(email__icontains=query) | Q(phone__icontains=query))
+    except Users.DoesNotExist:
+        results = None
+    
+    try:
+        friendlist = FriendList.objects.get(user=request.user)
+    except FriendList.DoesNotExist:
+        friendlist = None
+
+    results_list = []
+    for result in results:
+        res_obj = {
+            "id": result.id,
+            "username": result.username,
+            "email": result.email,
+            "phone": result.phone,
+            "fullname" : result.fullname,
+        }
+        if result in friendlist.friends.all():
+            if result == request.user:
+                res_obj["is_itself"] = True
+            else:
+                res_obj["is_itself"] = False
+            res_obj["is_friend"] = True
+            results_list.append(res_obj)
+    
+    for result in results:
+        res_obj = {
+            "id": result.id,
+            "username": result.username,
+            "email": result.email,
+            "phone": result.phone,
+            "fullname" : result.fullname,
+        }
+        if result not in friendlist.friends.all():
+            if result == request.user:
+                res_obj["is_itself"] = True
+            else:
+                res_obj["is_itself"] = False
+
+            res_obj["is_friend"] = False
+            results_list.append(res_obj)
+    
+    return JsonResponse({"status" : 200,"data" : results_list})
+
+def search_page(request):
+    results = search(request=request)
+    results = json.loads(results.content)
+    results = results["data"]
+    return render(request, "users/search.html",{"results":results})

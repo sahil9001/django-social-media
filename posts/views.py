@@ -35,3 +35,6 @@ def feed(request):
         'posts' : post_list
     }
     return render(request, 'users/home.html',context)
+
+def basepage(request):
+    return render(request, 'posts/basepage.html')

@@ -12,7 +12,10 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'users/main.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'users/showmore.css' %}">
-
+    <link
+  rel="stylesheet"
+  href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css"
+/>
     {% if title %}
         <title>Django Social Media - {{ title }}</title>
     {% else %}
@@ -34,10 +37,12 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if user.is_authenticated %}
-              <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
-              </form>
+              <form action="{% url 'search-page' %}" method="GET" class="form-inline my-2 my-lg-0">
+              <div id="autocomplete" class="autocomplete">
+                <input class="autocomplete-input" placeholder="Search" name="search"/>
+                <ul class="autocomplete-result-list"></ul>
+              </div>
+            </form>
                 <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
                 <a class="nav-item nav-link" href="{% url 'new-post' %}">New Post </a>
                 <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
@@ -72,5 +77,31 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
+    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+    <script>
+      new Autocomplete('#autocomplete', {
+        
+        search : input => {
+          console.log(input)
+          const url = `{% url 'search' %}?search=${input}`
+          function displayusername(data) {
+            return data.username
+          }
+          return new Promise(resolve =>{
+            fetch(url)
+            .then(response => response.json())
+            .then(data => { 
+              var newdata = []
+              for (let i = 0; i < data.data.length; i++) {
+                newdata.push(displayusername(data.data[i]))
+              }
+              resolve(newdata)
+            })
+          })
+        },
+        
+      })
+
+    </script>
+  </body>
 </html>
