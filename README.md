@@ -32,6 +32,7 @@
 The application is made with Django and Bootstrap 4 for the UI, it consists of a `Users` authentication custom model in Django which allows user to login through phone number and password.
 For each page, a corresponding functional view is linked as to process the functionality of the feature.
 
+## Hosted on : https://djangoappsocialmedia.herokuapp.com/
 ## Screenshots
 
 ![Screenshot from 2021-09-28 12-03-28](https://user-images.githubusercontent.com/32628578/135038683-be1b1b0e-aefc-4c09-841f-57df5c0da786.png)
