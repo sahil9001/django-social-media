@@ -22,6 +22,7 @@ class SignInForm(forms.Form):
     phone = forms.CharField(max_length=50)
     password = forms.CharField(max_length=50)
 
+
 class NewPostForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)

@@ -17,7 +17,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q 
+from django.db.models import Q
 from rest_framework.decorators import api_view
 
 # Create your views here.
@@ -86,9 +86,9 @@ def register(request):
                 "email": email,
                 "password": password,
                 "phone": phone,
-                "address" : address,
-                "occupation" : occupation,
-                "dob" : dob
+                "address": address,
+                "occupation": occupation,
+                "dob": dob,
             }
             response = register_user(request, data=form_obj)
             if response.status_code == 201:
@@ -153,7 +153,13 @@ def profile(request):
         for req in friendrequest:
             friend_request_list.append(req)
     return render(
-        request, "users/profile.html", {"friendrequest" : friend_request_list,"posts": post_list, "friends": friend_list}
+        request,
+        "users/profile.html",
+        {
+            "friendrequest": friend_request_list,
+            "posts": post_list,
+            "friends": friend_list,
+        },
     )
 
 
@@ -208,10 +214,10 @@ def otherprofile(request, id):
         {
             "user": user,
             "is_friend": is_friend,
-            "is_itself" : is_itself,
+            "is_itself": is_itself,
             "mutual_friends": mutual_friends,
             "friends": all_friends,
-            "posts" : post_list
+            "posts": post_list,
         },
     )
 
@@ -342,26 +348,28 @@ def remove_friend(request):
     else:
         return redirect("profile")
 
+
 @login_required
 @csrf_exempt
 def remove_post(request):
     if request.method == "POST":
         try:
-            post = Posts.objects.get(pk = request.POST.get("post_id"))
+            post = Posts.objects.get(pk=request.POST.get("post_id"))
         except Posts.DoesNotExist:
             post = None
-        
+
         if post:
             post.delete()
-            messages.success(request,"Post Deleted Successfully")
+            messages.success(request, "Post Deleted Successfully")
             return redirect("profile")
         else:
-            messages.warning(request,"Unable to delete post")
+            messages.warning(request, "Unable to delete post")
             return redirect("profile")
     else:
         return redirect("profile")
 
-def create_post(request,data):
+
+def create_post(request, data):
     serializer = CreateFormSerializer(data=data)
     if serializer.is_valid():
         post = serializer.save(user=request.user)
@@ -371,24 +379,25 @@ def create_post(request,data):
         print(data)
         return Response(data, status.HTTP_400_BAD_REQUEST)
 
+
 @login_required
 def new_post(request):
     if request.method == "POST":
-        form = NewPostForm(request.POST,request.FILES)
+        form = NewPostForm(request.POST, request.FILES)
         print(form.errors)
         if form.is_valid():
             title = form.cleaned_data.get("title")
             body = form.cleaned_data.get("body")
             image = form.cleaned_data.get("image")
             form_obj = {
-                "title" : title,
-                "body" : body,
-                "image" : image,
+                "title": title,
+                "body": body,
+                "image": image,
             }
             response = create_post(request, data=form_obj)
             print(response.status_code)
             if response.status_code == 201:
-                messages.success(request,"Posted successfully!")
+                messages.success(request, "Posted successfully!")
 
                 return redirect("new-post")
             else:
@@ -397,14 +406,19 @@ def new_post(request):
         form = NewPostForm()
     return render(request, "users/new_post.html", {"form": form})
 
+
 @login_required
 def search(request):
     query = request.GET.get("search")
     try:
-        results = Users.objects.filter(Q(username__icontains=query) | Q(email__icontains=query) | Q(phone__icontains=query))
+        results = Users.objects.filter(
+            Q(username__icontains=query)
+            | Q(email__icontains=query)
+            | Q(phone__icontains=query)
+        )
     except Users.DoesNotExist:
         results = None
-    
+
     try:
         friendlist = FriendList.objects.get(user=request.user)
     except FriendList.DoesNotExist:
@@ -417,7 +431,7 @@ def search(request):
             "username": result.username,
             "email": result.email,
             "phone": result.phone,
-            "fullname" : result.fullname,
+            "fullname": result.fullname,
         }
         if result in friendlist.friends.all():
             if result == request.user:
@@ -426,14 +440,14 @@ def search(request):
                 res_obj["is_itself"] = False
             res_obj["is_friend"] = True
             results_list.append(res_obj)
-    
+
     for result in results:
         res_obj = {
             "id": result.id,
             "username": result.username,
             "email": result.email,
             "phone": result.phone,
-            "fullname" : result.fullname,
+            "fullname": result.fullname,
         }
         if result not in friendlist.friends.all():
             if result == request.user:
@@ -443,11 +457,12 @@ def search(request):
 
             res_obj["is_friend"] = False
             results_list.append(res_obj)
-    
-    return JsonResponse({"status" : 200,"data" : results_list})
+
+    return JsonResponse({"status": 200, "data": results_list})
+
 
 def search_page(request):
     results = search(request=request)
     results = json.loads(results.content)
     results = results["data"]
-    return render(request, "users/search.html",{"results":results})
+    return render(request, "users/search.html", {"results": results})

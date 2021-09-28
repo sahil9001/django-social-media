@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "rest_framework",
     "rest_framework.authtoken",
-    'storages'
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -81,13 +81,13 @@ AUTH_USER_MODEL = "users.Users"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djangoproj',
-        'USER': 'myprojectuser',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "djangoproj",
+        "USER": "myprojectuser",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "",
     }
 }
 
@@ -137,7 +137,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = 'feed'
-LOGIN_URL = 'login'
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-DATETIME_FORMAT = 'd-m-Y H:i:s'
+LOGIN_REDIRECT_URL = "feed"
+LOGIN_URL = "login"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+DATETIME_FORMAT = "d-m-Y H:i:s"

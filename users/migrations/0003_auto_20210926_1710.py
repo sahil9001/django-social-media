@@ -7,23 +7,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_alter_users_password'),
+        ("users", "0002_alter_users_password"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='users',
-            name='address',
+            model_name="users",
+            name="address",
             field=models.CharField(max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='users',
-            name='dob',
+            model_name="users",
+            name="dob",
             field=models.DateField(default=datetime.date.today),
         ),
         migrations.AddField(
-            model_name='users',
-            name='occupation',
+            model_name="users",
+            name="occupation",
             field=models.CharField(max_length=50, null=True),
         ),
     ]
